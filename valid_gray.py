@@ -11,14 +11,13 @@ import numpy as np
 import cv2
 
 global_model = "4@1"
-global_action = "test"
+global_action = "test" #"test" or "dev"
+
+data_root = "/Users/wdh/Downloads/CASIA-CeFA/"
+checkpoints_root = "./checkpoints/gray%s"%global_model
 model_name = "23000_loss_0.0020.pth"
 
-data_root = "/Users/wdh/Downloads/CASIA-CeFA/phase2"
-
 res_name = "%s_%s_res.txt"%(global_model,global_action)
-
-checkpoints_root = "./checkpoints/gray%s"%global_model
 
 channels = 3
 rows = 256
