@@ -16,7 +16,7 @@ We use Anaconda3 with python 3.7 , we use  :
 
 >  numpy 1.18.1
 
-in your enviroment.
+in the enviroment.
 
 ## Data pre-progress
 
@@ -47,12 +47,12 @@ like this
 ├── data
     ├── dev
         ├── 003001
-        		├── depth
-    				├── depth_bak
-    				├── ir
-    				├── ir_bak
-    				├── profile
-    				├── profile_bak	
+            ├── depth
+            ├── depth_bak
+            ├── ir
+            ├── ir_bak
+            ├── profile
+            ├── profile_bak	
  ... ...
 ```
 
