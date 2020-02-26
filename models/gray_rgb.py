@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-from torch import functional as F
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
     """3x3 convolution with padding"""
@@ -97,7 +96,6 @@ class Bottleneck(nn.Module):
         return out
 
 class gray_rgbnet(nn.Module):
-# class ResNet(nn.Module):
     def __init__(self, block, layers, num_classes=4, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
                  norm_layer=None):

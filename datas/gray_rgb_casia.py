@@ -50,7 +50,7 @@ class gray_rgb_casia(Dataset):
         label = np.random.randint(0,2)
         imgs = []
         if label == 0: #0是负样本
-            id = np.random.randint(1, frame_count + 1)  #判断边界
+            id = np.random.randint(1, frame_count + 1)
             ids = [id,id] #取同一帧
 
             flag1 = np.random.randint(0, 2) #决定是否翻转
@@ -109,7 +109,6 @@ class gray_rgb_casia(Dataset):
         cur_label = label_ori + 2*label
 
         return cur_tensor,np.eye(4,dtype="float32")[cur_label],path.join(video_path,"%04d.jpg,%04d.jpg"%(ids[0],ids[1]))
-        # return cur_tensor,cur_label,path.join(video_path,"%04d.jpg,%04d.jpg"%(ids[0],ids[1]))
 
     def __len__(self):
         return len(self.video_paths)
@@ -175,7 +174,7 @@ def progress(img,gamma=1.0,mean=0,var=0.001,israndom=True,isnoise=True):
 
     return img
 
-def rect_img(im):
+def rect_img(im): #裁剪负样本人脸
     imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
     ret, thresh = cv2.threshold(imgray,1,255,cv2.THRESH_BINARY)
@@ -223,15 +222,10 @@ if __name__ == "__main__":
 
     data_root = "/Users/wdh/Downloads/CASIA-CeFA/"
     train_label_path = path.join(data_root, "4@1_train.txt")
-    # train_label_path = "/Users/wdh/fsdownload/myval.txt"
-
-    from models.simsdnet import simsdnet, BasicBlock
 
     channels = 1
     rows = 256
     cols = 256
-
-    # net = simsdnet(BasicBlock, [2, 2, 2, 2], num_classes=2)
 
     data_set = gray_rgb_casia(train_label_path, data_root, rows, cols, channels)
     sampler = RandomSampler(data_set, replacement=True, num_samples=30)
@@ -241,12 +235,9 @@ if __name__ == "__main__":
     print(len(data_set))
     for i in range(1):
         for id, (inputs,labels, paths) in enumerate(data_loader):
-            # img = inputs.numpy()[0,0,:,:]
             img = inputs.numpy()[0]
             img = np.concatenate([img[0,:,:],img[1,:,:],img[2,:,:]],axis=1)
             label = labels.numpy()[0]
             cv2.imwrite("imgshow/showimg_test_%d_%d.jpg"%(id,label[-1]),img*255)
             print(id,inputs.shape,labels,paths)
 
-            # res = net.forward(inputs, rank_pooling)
-            # print(id, res, labels)

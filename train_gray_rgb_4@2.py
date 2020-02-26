@@ -1,7 +1,6 @@
-# from models.simsdnet import simsdnet,BasicBlock
 from models.gray_rgb import gray_rgbnet,BasicBlock
 from os import path
-# from datas.casia_dataset import casia_dataset
+
 from datas.gray_rgb_casia import gray_rgb_casia
 
 import torch
@@ -12,12 +11,10 @@ from torch import nn
 device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 print(device)
 
-# data_root = "/Users/wdh/Downloads/CASIA-CeFA"
-data_root = "/nfs/private/wdh/cefa-train/dataset/CASIA-CeFA/"
+data_root = "/Users/wdh/Downloads/CASIA-CeFA"
 train_label_path = path.join(data_root, "4@2_train.txt")
 
-# checkpoints_root = "/Users/wdh/PycharmProjects/cefa_torch/checkpoints"
-checkpoints_root = "/nfs/private/wdh/cefa-train/cefa-code-torch/checkpoints/gray4@2"
+checkpoints_root = "./checkpoints/gray_4@2"
 
 channels = 3
 rows = 256
@@ -34,7 +31,6 @@ net = gray_rgbnet(BasicBlock, [2, 2, 2, 2], num_classes=4)
 net.to(device)
 
 optimizer = Adam(net.parameters(),lr)
-# criterion = nn.CrossEntropyLoss()
 criterion = nn.BCELoss()
 
 running_loss = 0.0
@@ -60,7 +56,7 @@ for epoch in range(epochs):
             torch.save(net.state_dict(),path.join(checkpoints_root,"%d_loss_%.4f.pth"%(step_count,running_loss)))
         running_loss = 0.0
 
-    # if  epoch >= epochs / 2:
+    # adjust learning rate
     if epoch >= epochs / 2 and (epoch+1) % 20 == 0:
         for p in optimizer.param_groups:
             p['lr'] *= 0.5
