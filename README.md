@@ -8,9 +8,12 @@ we use RGB data for training.
 
 We use Anaconda3 with python 3.7 , we use  :
 
->  opencv-python 4.2.0
+> opencv-python  4.2.0
+
 >  pytorch 1.4.0
+
 >  imutils 0.5.3
+
 >  numpy 1.18.1
 
 in your enviroment.
