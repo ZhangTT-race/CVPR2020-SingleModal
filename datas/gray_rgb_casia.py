@@ -66,13 +66,13 @@ class gray_rgb_casia(Dataset):
                 img_ori = cv2.equalizeHist(img_ori)
 
             for k,id in enumerate(ids):
-                if k == 0:
-                    img_channel0 = progress(img_ori.copy(), isnoise=False)
-                    img_channel0 = (img_channel0 / 255.0).astype("float32")
-                    img_channel0 = np.expand_dims(img_channel0, axis=0)
-                    imgs.append(img_channel0)
+                # if k == 0:
+                #     img_channel0 = progress(img_ori.copy(), isnoise=False)
+                #     img_channel0 = (img_channel0 / 255.0).astype("float32")
+                #     img_channel0 = np.expand_dims(img_channel0, axis=0)
+                #     imgs.append(img_channel0)
 
-                img = progress(img_ori) #模拟帧间差异
+                img = progress(img_ori,isnoise=False) #模拟帧间差异
                 img = (img / 255.0).astype("float32")
                 img = np.expand_dims(img, axis=0)
 
@@ -91,13 +91,13 @@ class gray_rgb_casia(Dataset):
                     img = cv2.flip(img, 1)
                 if flag2 != 0:
                     img = cv2.equalizeHist(img)
-                if k == 0:
-                    img_channel0 = progress(img.copy(), isnoise=False)
-                    img_channel0 = (img_channel0 / 255.0).astype("float32")
-                    img_channel0 = np.expand_dims(img_channel0, axis=0)
-                    imgs.append(img_channel0)
+                # if k == 0:
+                #     img_channel0 = progress(img.copy(), isnoise=False)
+                #     img_channel0 = (img_channel0 / 255.0).astype("float32")
+                #     img_channel0 = np.expand_dims(img_channel0, axis=0)
+                #     imgs.append(img_channel0)
 
-                img = progress(img)  # 模拟帧间差异
+                img = progress(img,isnoise=False)  # 模拟帧间差异
 
                 img = (img / 255.0).astype("float32")
                 img = np.expand_dims(img,axis=0)
@@ -236,8 +236,8 @@ if __name__ == "__main__":
     for i in range(1):
         for id, (inputs,labels, paths) in enumerate(data_loader):
             img = inputs.numpy()[0]
-            img = np.concatenate([img[0,:,:],img[1,:,:],img[2,:,:]],axis=1)
+            img = np.concatenate([img[0,:,:],img[1,:,:]],axis=1)
             label = labels.numpy()[0]
-            cv2.imwrite("imgshow/showimg_test_%d_%d.jpg"%(id,label[-1]),img*255)
+            cv2.imwrite("/Users/wdh/fsdownload/imshow/showimg_test_%d_%d%d%d%d.jpg"%(id,label[0],label[1],label[2],label[3]),img*255)
             print(id,inputs.shape,labels,paths)
 
