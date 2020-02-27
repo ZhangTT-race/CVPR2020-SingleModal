@@ -1,6 +1,6 @@
 import os
 from models.gray_rgb import gray_rgbnet,BasicBlock
-
+from datas.gray_rgb_casia import progress
 import torch
 
 device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")

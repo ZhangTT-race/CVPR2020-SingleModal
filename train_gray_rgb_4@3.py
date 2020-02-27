@@ -44,7 +44,7 @@ for epoch in range(epochs):
 
         optimizer.zero_grad()
 
-        res = net.forward(inputs.to(device))
+        res = net.forward(inputs[0].to(device),inputs[1].to(device))
         loss = criterion(res,labels.to(device))
         loss.backward()
 

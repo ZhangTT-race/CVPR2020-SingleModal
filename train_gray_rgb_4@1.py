@@ -13,8 +13,8 @@ cuda_id = 0
 device = torch.device("cuda:%d"%(cuda_id) if torch.cuda.is_available() else "cpu")
 print(device)
 
-data_root = "/nfs/private/wdh/cefa-train/dataset/CASIA-CeFA"
-# data_root = "/Users/wdh/Downloads/CASIA-CeFA"
+# data_root = "/nfs/private/wdh/cefa-train/dataset/CASIA-CeFA"
+data_root = "/Users/wdh/Downloads/CASIA-CeFA"
 train_label_path = path.join(data_root, "%s_train.txt"%(glb_name))
 
 checkpoints_root = "./checkpoints/gray%s"%(glb_name)
@@ -44,7 +44,7 @@ for epoch in range(epochs):
 
         optimizer.zero_grad()
 
-        res = net.forward(inputs.to(device))
+        res = net.forward(inputs[0].to(device),inputs[1].to(device))
         loss = criterion(res,labels.to(device))
         loss.backward()
 

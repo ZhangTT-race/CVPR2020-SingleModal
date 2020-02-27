@@ -51,7 +51,7 @@ class gray_rgb_casia(Dataset):
         imgs = []
         if label == 0: #0是负样本
             id = np.random.randint(1, frame_count + 1)
-            ids = [id,id,id] #取同一帧
+            ids = [id,id] #取同一帧
 
             flag1 = np.random.randint(0, 2) #决定是否翻转
             flag2 = 1 #np.random.randint(0,2) #决定是否直方图均衡化
@@ -78,11 +78,10 @@ class gray_rgb_casia(Dataset):
 
                 imgs.append(img)
         else:
-            id1 = np.random.randint(1, frame_count // 3 + 1)
-            id2 = np.random.randint(id1+frame_count //3, 2*frame_count // 3 + 1)
-            id3 = np.random.randint(id2 + frame_count //3, frame_count + 1)
+            id1 = np.random.randint(1, frame_count // 4 + 1)
+            id2 = np.random.randint(id1+frame_count //4, frame_count  + 1)
 
-            ids = [id1,id2,id3]
+            ids = [id1,id2]
             # 决定是否翻转
             flag1 = np.random.randint(0, 2)  # 决定是否翻转
             flag2 = 1 #np.random.randint(0, 2)  # 决定是否直方图均衡化
@@ -107,10 +106,11 @@ class gray_rgb_casia(Dataset):
                 imgs.append(img)
 
         # cur_tensor = np.concatenate(imgs,2)
-        cur_tensor = np.concatenate(imgs, 0)  # 拼成三个gray通道
+        cur_tensor = np.concatenate(imgs[1:], 0)  # 拼成三个gray通道
+
         cur_label = label_ori + 2*label
 
-        return cur_tensor,np.eye(4,dtype="float32")[cur_label],path.join(video_path,"%04d.jpg,%04d.jpg,%04d.jpg"%(ids[0],ids[1],ids[2]))
+        return (cur_tensor,imgs[0]),np.eye(4,dtype="float32")[cur_label],path.join(video_path,"%04d.jpg,%04d.jpg"%(ids[0],ids[1]))
 
     def __len__(self):
         return len(self.video_paths)
@@ -237,9 +237,10 @@ if __name__ == "__main__":
     print(len(data_set))
     for i in range(1):
         for id, (inputs,labels, paths) in enumerate(data_loader):
-            img = inputs.numpy()[0]
-            img = np.concatenate([img[0,:,:],img[1,:,:],img[2,:,:],img[3,:,:]],axis=1)
+            img = inputs[0].numpy()[0]
+
+            img = np.concatenate([inputs[1][0,0],img[0,:,:],img[1,:,:]],axis=1)
             label = labels.numpy()[0]
             cv2.imwrite("/Users/wdh/fsdownload/imshow/%d_%d%d%d%d.jpg"%(id,label[0],label[1],label[2],label[3]),img*255)
-            print(id,inputs.shape,labels,paths)
+            print(id,inputs[0].shape,labels,paths)
 

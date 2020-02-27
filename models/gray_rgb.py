@@ -115,11 +115,14 @@ class gray_rgbnet(nn.Module):
                              "or a 3-element tuple, got {}".format(replace_stride_with_dilation))
         self.groups = groups
         self.base_width = width_per_group
-        self.conv1 = nn.Conv2d(4, self.inplanes, kernel_size=7, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(2, self.inplanes, kernel_size=7, stride=2, padding=3,
                                bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+
+        inplanes_r = self.inplanes
+        dilation_r = self.dilation
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2,
                                        dilate=replace_stride_with_dilation[0])
@@ -127,6 +130,17 @@ class gray_rgbnet(nn.Module):
                                        dilate=replace_stride_with_dilation[1])
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
                                        dilate=replace_stride_with_dilation[2])
+
+        self.inplanes = inplanes_r
+        self.dilation = dilation_r
+        self.layer1y = self._make_layer(block, 64, layers[0])
+        self.layer2y = self._make_layer(block, 128, layers[1], stride=2,
+                                       dilate=replace_stride_with_dilation[0])
+        self.layer3y = self._make_layer(block, 256, layers[2], stride=2,
+                                       dilate=replace_stride_with_dilation[1])
+        # self.layer4y = self._make_layer(block, 512, layers[3], stride=2,
+        #                                dilate=replace_stride_with_dilation[2])
+
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
@@ -171,8 +185,18 @@ class gray_rgbnet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def _forward_impl(self, x):
+    def _forward_impl(self, x,y):
         # See note [TorchScript super()]
+        y = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3,
+                               bias=False)(y)
+        y = self._norm_layer(64)(y)
+        y = nn.ReLU(inplace=True)(y)
+        y = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)(y)
+
+        y = self.layer1y(y)
+        y = self.layer2y(y)
+        y = self.layer3y(y)
+
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -180,8 +204,12 @@ class gray_rgbnet(nn.Module):
 
         x = self.layer1(x)
         x = self.layer2(x)
-
         x = self.layer3(x)
+
+        x = torch.cat([x, y], 1)
+        x = nn.Conv2d(512, 256, kernel_size=3, stride=1, padding=1,
+                      bias=False)(x)
+
         x = self.layer4(x)
 
         x = self.avgpool(x)
@@ -190,8 +218,8 @@ class gray_rgbnet(nn.Module):
         x = torch.softmax(x,dim=1)
         return x
 
-    def forward(self, x):
-        return self._forward_impl(x)
+    def forward(self, x,y):
+        return self._forward_impl(x,y)
 
 if __name__ == "__main__":
     from datas.gray_rgb_casia import gray_rgb_casia
@@ -225,5 +253,5 @@ if __name__ == "__main__":
             # cv2.imwrite("imgshow/showimg%d_%d.jpg"%(id,label[1]),img*255)
             # print(inputs.shape,labels,paths)
 
-            res = net.forward(inputs)
+            res = net.forward(inputs[0],inputs[1])
             print(id, res, labels)
