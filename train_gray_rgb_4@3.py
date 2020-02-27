@@ -19,7 +19,7 @@ train_label_path = path.join(data_root, "%s_train.txt"%(glb_name))
 
 checkpoints_root = "./checkpoints/gray%s"%(glb_name)
 
-channels = 2
+channels = 4
 rows = 256
 cols = 256
 batch_size = 32

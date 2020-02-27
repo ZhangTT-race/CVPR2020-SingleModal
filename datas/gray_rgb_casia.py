@@ -51,7 +51,7 @@ class gray_rgb_casia(Dataset):
         imgs = []
         if label == 0: #0是负样本
             id = np.random.randint(1, frame_count + 1)
-            ids = [id,id] #取同一帧
+            ids = [id,id,id] #取同一帧
 
             flag1 = np.random.randint(0, 2) #决定是否翻转
             flag2 = 1 #np.random.randint(0,2) #决定是否直方图均衡化
@@ -66,21 +66,23 @@ class gray_rgb_casia(Dataset):
                 img_ori = cv2.equalizeHist(img_ori)
 
             for k,id in enumerate(ids):
-                # if k == 0:
-                #     img_channel0 = progress(img_ori.copy(), isnoise=False)
-                #     img_channel0 = (img_channel0 / 255.0).astype("float32")
-                #     img_channel0 = np.expand_dims(img_channel0, axis=0)
-                #     imgs.append(img_channel0)
+                if k == 0:
+                    img_channel0 = progress(img_ori.copy(), isnoise=False)
+                    img_channel0 = (img_channel0 / 255.0).astype("float32")
+                    img_channel0 = np.expand_dims(img_channel0, axis=0)
+                    imgs.append(img_channel0)
 
-                img = progress(img_ori,isnoise=False) #模拟帧间差异
+                img = progress(img_ori) #模拟帧间差异
                 img = (img / 255.0).astype("float32")
                 img = np.expand_dims(img, axis=0)
 
                 imgs.append(img)
         else:
-            id1 = np.random.randint(1, frame_count // 2 + 1)
-            id2 = np.random.randint(id1+frame_count //4, frame_count + 1)  #间隔至少1/4 frame_count [0,3] [2-5,7]
-            ids = [id1,id2]
+            id1 = np.random.randint(1, frame_count // 3 + 1)
+            id2 = np.random.randint(id1+frame_count //3, 2*frame_count // 3 + 1)
+            id3 = np.random.randint(id2 + frame_count //3, frame_count + 1)
+
+            ids = [id1,id2,id3]
             # 决定是否翻转
             flag1 = np.random.randint(0, 2)  # 决定是否翻转
             flag2 = 1 #np.random.randint(0, 2)  # 决定是否直方图均衡化
@@ -91,13 +93,13 @@ class gray_rgb_casia(Dataset):
                     img = cv2.flip(img, 1)
                 if flag2 != 0:
                     img = cv2.equalizeHist(img)
-                # if k == 0:
-                #     img_channel0 = progress(img.copy(), isnoise=False)
-                #     img_channel0 = (img_channel0 / 255.0).astype("float32")
-                #     img_channel0 = np.expand_dims(img_channel0, axis=0)
-                #     imgs.append(img_channel0)
+                if k == 0:
+                    img_channel0 = progress(img.copy(), isnoise=False)
+                    img_channel0 = (img_channel0 / 255.0).astype("float32")
+                    img_channel0 = np.expand_dims(img_channel0, axis=0)
+                    imgs.append(img_channel0)
 
-                img = progress(img,isnoise=False)  # 模拟帧间差异
+                img = progress(img)  # 模拟帧间差异
 
                 img = (img / 255.0).astype("float32")
                 img = np.expand_dims(img,axis=0)
@@ -108,7 +110,7 @@ class gray_rgb_casia(Dataset):
         cur_tensor = np.concatenate(imgs, 0)  # 拼成三个gray通道
         cur_label = label_ori + 2*label
 
-        return cur_tensor,np.eye(4,dtype="float32")[cur_label],path.join(video_path,"%04d.jpg,%04d.jpg"%(ids[0],ids[1]))
+        return cur_tensor,np.eye(4,dtype="float32")[cur_label],path.join(video_path,"%04d.jpg,%04d.jpg,%04d.jpg"%(ids[0],ids[1],ids[2]))
 
     def __len__(self):
         return len(self.video_paths)
@@ -236,8 +238,8 @@ if __name__ == "__main__":
     for i in range(1):
         for id, (inputs,labels, paths) in enumerate(data_loader):
             img = inputs.numpy()[0]
-            img = np.concatenate([img[0,:,:],img[1,:,:]],axis=1)
+            img = np.concatenate([img[0,:,:],img[1,:,:],img[2,:,:],img[3,:,:]],axis=1)
             label = labels.numpy()[0]
-            cv2.imwrite("/Users/wdh/fsdownload/imshow/showimg_test_%d_%d%d%d%d.jpg"%(id,label[0],label[1],label[2],label[3]),img*255)
+            cv2.imwrite("/Users/wdh/fsdownload/imshow/%d_%d%d%d%d.jpg"%(id,label[0],label[1],label[2],label[3]),img*255)
             print(id,inputs.shape,labels,paths)
 
