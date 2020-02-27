@@ -52,13 +52,16 @@ for id_model,global_model in enumerate(global_models):
 
             cur_res_dir = []
             for t in range(times):
-                id1 = np.random.randint(1, frame_count // 4 + 1)
-                if global_action == "dev":
-                    id2 = id1
-                else:
-                    id2 = np.random.randint(id1 + frame_count // 2, frame_count + 1)  # 间隔至少1/2
+                id1 = np.random.randint(1, frame_count // 3 + 1)
 
-                ids = [id1, id2]
+                if global_action == "dev":
+                    id3 = id2 = id1
+                else:
+                    # id2 = np.random.randint(id1 + frame_count // 2, frame_count + 1)  # 间隔至少1/2
+                    id2 = np.random.randint(id1 + frame_count // 3, 2 * frame_count // 3 + 1)
+                    id3 = np.random.randint(id2 + frame_count // 3, frame_count + 1)
+
+                ids = [id1, id2,id3]
                 imgs = []
                 for k,id in enumerate(ids):
                     img = cv2.resize(cv2.imread(path.join(rgb_root,"%04d.jpg"%id)), (cols, rows))
