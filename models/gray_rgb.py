@@ -121,6 +121,15 @@ class gray_rgbnet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
+        self.conv1y = nn.Conv2d(1, self.inplanes, kernel_size=7, stride=2, padding=3,
+                               bias=False)
+        self.bn1y = norm_layer(self.inplanes)
+        self.reluy = nn.ReLU(inplace=True)
+        self.maxpooly = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+
+        self.cat_conv = nn.Conv2d(512, 256, kernel_size=3, stride=1, padding=1,
+                      bias=False)
+
         inplanes_r = self.inplanes
         dilation_r = self.dilation
         self.layer1 = self._make_layer(block, 64, layers[0])
@@ -187,11 +196,10 @@ class gray_rgbnet(nn.Module):
 
     def _forward_impl(self, x,y):
         # See note [TorchScript super()]
-        y = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3,
-                               bias=False)(y)
-        y = self._norm_layer(64)(y)
-        y = nn.ReLU(inplace=True)(y)
-        y = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)(y)
+        y = self.conv1y(y)
+        y = self.bn1y(y)
+        y = self.reluy(y)
+        y = self.maxpooly(y)
 
         y = self.layer1y(y)
         y = self.layer2y(y)
@@ -207,8 +215,7 @@ class gray_rgbnet(nn.Module):
         x = self.layer3(x)
 
         x = torch.cat([x, y], 1)
-        x = nn.Conv2d(512, 256, kernel_size=3, stride=1, padding=1,
-                      bias=False)(x)
+        x = self.cat_conv(x)
 
         x = self.layer4(x)
 

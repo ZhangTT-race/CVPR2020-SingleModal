@@ -11,7 +11,9 @@ import numpy as np
 import cv2
 
 global_models = ["4@1","4@2","4@3"]
-model_names = ["23000_loss_0.0020.pth","",""]
+# model_names = ["23000_loss_0.0006.pth","22000_loss_0.0041.pth","24000_loss_0.0029.pth"]
+# model_names = ["31000_loss_0.0046.pth","30000_loss_0.0071.pth","30000_loss_0.0060.pth"]
+model_names = ["23000_loss_0.0006.pth","22000_loss_0.0041.pth","30000_loss_0.0060.pth"]
 
 global_actions = ["dev","test"] #"test" or "dev"
 
@@ -52,35 +54,47 @@ for id_model,global_model in enumerate(global_models):
 
             cur_res_dir = []
             for t in range(times):
-                id1 = np.random.randint(1, frame_count // 3 + 1)
-
+                #id1 = frame_count // 4  #np.random.randint(1, frame_count // 4 + 1)
+                id1 = 1 #frame_count // 4  #np.random.randint(1, frame_count // 4 + 1)
+         
                 if global_action == "dev":
-                    id3 = id2 = id1
+                    id2 = id1
                 else:
-                    # id2 = np.random.randint(id1 + frame_count // 2, frame_count + 1)  # 间隔至少1/2
-                    id2 = np.random.randint(id1 + frame_count // 3, 2 * frame_count // 3 + 1)
-                    id3 = np.random.randint(id2 + frame_count // 3, frame_count + 1)
+                    #id2 = frame_count *3 // 4 #np.random.randint(id1 + frame_count // 2, frame_count + 1)  # 间隔至少1/2
+                    id2 = frame_count #np.random.randint(id1 + frame_count // 2, frame_count + 1)  # 间隔至少1/2
 
-                ids = [id1, id2,id3]
+                ids = [id1, id2]
                 imgs = []
+                img_y = None
                 for k,id in enumerate(ids):
-                    img = cv2.resize(cv2.imread(path.join(rgb_root,"%04d.jpg"%id)), (cols, rows))
+                    try:
+                        img = cv2.resize(cv2.imread(path.join(rgb_root,"%04d.jpg"%id)), (cols, rows))
+                    except:
+                        print(path.join(rgb_root,"%04d.jpg"%id))
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                    
+                    if global_model == "4@1" and global_action == "test":
+                        gamma = 0.5
+                        invGamma = 1.0 / gamma 
+                        table = np.array([((i / 255.0) ** invGamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
+                        img = cv2.LUT(np.array(img, dtype=np.uint8), table) 
+                    
                     img = cv2.equalizeHist(img)
-
                     img = (img / 255.0).astype("float32")
                     img = np.expand_dims(img, axis=0)
 
                     imgs.append(img)
-                    # if k == 0:
-                    #     imgs.append(img)
+                    if k == 0:
+                        img_y = img.copy()
 
                 cur_tensor = np.concatenate(imgs, 0)
                 cur_tensor = np.expand_dims(cur_tensor,axis=0)
+                cur_tensor_y = np.expand_dims(img_y,axis=0)
                 cur_tensor = torch.tensor(cur_tensor,device=device)
+                cur_tensor_y = torch.tensor(cur_tensor_y,device=device)
                 # print(cur_tensor.shape)
 
-                res = net(cur_tensor)
+                res = net(cur_tensor,cur_tensor_y)
 
                 if global_action == "dev":
                     p_real = res.cpu().detach().numpy()[0, 1]
