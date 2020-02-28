@@ -58,28 +58,15 @@ like this
 
 ## Train
 
-Set your datapath and checkpoint path and coda 
+Set your datapath and checkpoint path and coda ，in train_gray_rgb_4@1.py train_gray_rgb_4@2.py train_gray_rgb_4@3.py  
 
 ```shell
-python train_gray_rgb_4@1.py
-python train_gray_rgb_4@2.py
-python train_gray_rgb_4@3.py
+./train.sh
 ```
 
 ## Test
 
-set your global_model 、global_action 、data_root 、 checkpoints_root and model_name in valid_gray.py
-
-```python
-global_model = "4@1" # "4@1"、"4@2"、"4@3"
-global_action = "test" #"test" or "dev"
-
-data_root = "/Users/wdh/Downloads/CASIA-CeFA/"
-checkpoints_root = "./checkpoints/gray%s"%global_model
-model_name = "23000_loss_0.0020.pth"
-```
-
-run valid_gray.py each time after you change global_model and  global_action , or you change the code to make it automatically.
+set your global_models、model_names 、global_actions and data_root  valid_gray.py
 
 ```shell
 python valid_gray.py

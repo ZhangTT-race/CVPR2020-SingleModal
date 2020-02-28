@@ -1,6 +1,6 @@
 import os
 from models.gray_rgb import gray_rgbnet,BasicBlock
-from datas.gray_rgb_casia import progress
+
 import torch
 
 device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
@@ -11,8 +11,7 @@ import numpy as np
 import cv2
 
 global_models = ["4@1","4@2","4@3"]
-# model_names = ["23000_loss_0.0006.pth","22000_loss_0.0041.pth","24000_loss_0.0029.pth"]
-# model_names = ["31000_loss_0.0046.pth","30000_loss_0.0071.pth","30000_loss_0.0060.pth"]
+
 model_names = ["23000_loss_0.0006.pth","22000_loss_0.0041.pth","30000_loss_0.0060.pth"]
 
 global_actions = ["dev","test"] #"test" or "dev"
@@ -54,14 +53,12 @@ for id_model,global_model in enumerate(global_models):
 
             cur_res_dir = []
             for t in range(times):
-                #id1 = frame_count // 4  #np.random.randint(1, frame_count // 4 + 1)
-                id1 = 1 #frame_count // 4  #np.random.randint(1, frame_count // 4 + 1)
+                id1 = 1
          
                 if global_action == "dev":
                     id2 = id1
                 else:
-                    #id2 = frame_count *3 // 4 #np.random.randint(id1 + frame_count // 2, frame_count + 1)  # 间隔至少1/2
-                    id2 = frame_count #np.random.randint(id1 + frame_count // 2, frame_count + 1)  # 间隔至少1/2
+                    id2 = frame_count
 
                 ids = [id1, id2]
                 imgs = []
