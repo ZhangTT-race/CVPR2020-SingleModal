@@ -4,6 +4,10 @@ Code for competition : Chalearn Single-modal Cross-ethnicity Face anti-spoofing 
 
 we use RGB data for training.
 
+## commit
+
+The date of last commmit  is 03/01/2020 ,our result is comes from the last version.
+
 ## Prerequisites
 
 We use Anaconda3 with python 3.7 , we use  :

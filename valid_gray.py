@@ -3,7 +3,7 @@ from models.gray_rgb import gray_rgbnet,BasicBlock
 
 import torch
 
-device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu") #set cuda number
 print(device)
 
 from os import path
@@ -12,11 +12,11 @@ import cv2
 
 global_models = ["4@1","4@2","4@3"]
 
-model_names = ["23000_loss_0.0006.pth","22000_loss_0.0041.pth","30000_loss_0.0060.pth"]
+model_names = ["36000_loss_0.0006.pth","36000_loss_0.0041.pth","36000_loss_0.0060.pth"] #set name of your model here
 
 global_actions = ["dev","test"] #"test" or "dev"
 
-data_root = "/nfs/private/wdh/cefa-train/dataset/CASIA-CeFA"
+data_root = "/nfs/private/wdh/cefa-train/dataset/CASIA-CeFA" #dataset path
 # data_root = "/Users/wdh/Downloads/CASIA-CeFA/"
 
 for id_model,global_model in enumerate(global_models):
@@ -30,7 +30,6 @@ for id_model,global_model in enumerate(global_models):
         cols = 256
 
         times = 1
-        thres = 0.5
 
         net = gray_rgbnet(BasicBlock, [2, 2, 2, 2], num_classes=4)
 
