@@ -70,7 +70,7 @@ Set your datapath and checkpoint path and coda ，in train_gray_rgb_4@1.py train
 
 ## Test
 
-set your global_models、model_names 、global_actions and data_root  valid_gray.py
+Set your global_models、model_names 、global_actions and data_root  valid_gray.py. We recommend the **last epoch(step)** model witch usually performance well.
 
 ```shell
 python valid_gray.py
